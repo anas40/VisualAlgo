@@ -1,0 +1,23 @@
+:root{
+
+    --dark-blue:#202040;
+    --purple:#543864;
+    --orange:#ff6363;
+    --yellow:#ffbd69;
+    /* 
+    var(--main-bg-color);
+     */
+}
+
+header{
+    height: 100px;
+    background-color: var(--dark-blue);
+}
+main{
+    height: 100vw;
+    background-color: var(--purple);
+}
+footer{
+    height: 100px;
+    background-color: var(--dark-blue);
+}
