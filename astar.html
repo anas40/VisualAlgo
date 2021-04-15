@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DFS</title>
+    <link rel="stylesheet" href="gen.css">
+    <link rel="stylesheet" href="astar.css">
+
+</head>
+
+<body>
+    <header>
+        <div><a href="/" id="navigation"><img src="previous.svg" alt="back"> <span>Go Back</span></a></div>
+        <div>
+            <div class="color h-unvisited"></div>- Unvisited
+        </div>
+        <div>
+            <div class="color h-visiting"></div>- Visiting
+        </div>
+        <div>
+            <div class="color h-instack"></div>- In Queue
+        </div>
+        <div>
+            <div class="color h-visited"></div>- Visited
+        </div>
+    </header>
+    <main>
+        <div class="box"></div>
+        <div><button id="start">Start</button></div>
+        <section class="description">
+            <div>
+                <span class="hint">S</span>- Start (First Selection)
+            </div>
+            <div>
+                <span class="hint">E</span>- End (Second Selection)
+            </div>
+            <div>
+                <span class="hint">W</span>- Wall (Any Next Selection)
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div id="options">
+            <div><label for="rows">Rows</label><input id="rows" name="rows" type="number" placeholder="Enter rows">
+            </div>
+            <div><label for="columns">Columns</label><input name="columns" id="columns" type="number"
+                    placeholder="Enter columns"></div>
+            <div><label></label><button id="generateGridButton">Generate</button></div>
+        </div>
+    </footer>
+</body>
+<script src="astar.js"></script>
+
+</html>

@@ -8,6 +8,22 @@ window.addEventListener('load', () => {
 let row = 5
 let col = 5
 
+
+function checkoverflow(box) {
+    let width = box.offsetWidth
+    let height = box.offsetHeight
+    console.log(height, screen.height * .80);
+    console.log(width, screen.width * .80);
+
+    if (height > screen.height * 0.80) {
+        box.style.overflowY = 'scroll'
+        box.style.height = `${screen.height * .80}px`
+    }
+    if (width > screen.width * 0.80) {
+        box.style.overflowX = 'scroll'
+        box.style.width = `${screen.width * .80}px`
+    }
+}
 function generateGrid() {
     document.querySelector('.box').style.gridTemplateColumns = `repeat(${col},1fr)`
     let counter = row * col;
@@ -20,6 +36,7 @@ function generateGrid() {
         div.className = 'childBox';
         box.appendChild(div);
     }
+    checkoverflow(box)
 }
 
 function newGrid() {

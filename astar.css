@@ -1,0 +1,15 @@
+.childBox{
+    font-size: 1rem;
+}
+.box::-webkit-scrollbar{
+    width: 5px;
+    border-radius: 4px;
+    height: 5px;
+}
+.box::-webkit-scrollbar-thumb{
+    border-radius: 40px;
+    background-color: rgb(200, 200, 200);
+}
+.box::-webkit-scrollbar-track{
+    background-color: rgb(240, 240, 240);
+}
