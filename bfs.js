@@ -82,11 +82,8 @@ function boxVisited(num) {
     selectedBox.classList.remove('selected')
     selectedBox.classList.add('visited')
 }
-function boxReset(num) {
-    for (let i = 0; i < num; i++) {
-        let selectedBox = document.querySelector(`#box${i}`)
-        selectedBox.classList.remove('visited')
-    }
+function boxReset() {
+    generateGrid()
 }
 function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -94,34 +91,38 @@ function sleep(milliseconds) {
 
 async function startBFS(event) {
     const start = event.target.innerText
+    if(isNaN(start)) return
     const time = 500;
-    const moves = [{ f: 0, s: 1 }, { f: 0, s: -1 }, { f: 1, s: 0 }, { f: -1, s: 0 }]
+    const moves = [{ i: 0, j: 1 }, { i: 0, j: -1 }, { i: 1, j: 0 }, { i: -1, j: 0 }]
     let visited = emptyArray(row, col);
 
-    let selectedI = Math.floor(start / col);
-    let selectedJ = Math.floor(start % col);
+    let startI = Math.floor(start / col);
+    let startJ = Math.floor(start % col);
+    visited[startI][startJ] = 1
 
     let queue = [];
-    queue.push({ i: selectedI, j: selectedJ });
+    queue.push({ i: startI, j: startJ });
     while (queue.length>0) {
         let { i, j } = queue.shift();
         let num = i * col + j;
         
-        if (visited[i][j]) continue;
-        visited[i][j] = 1
         boxSelected(num)
         await sleep(time)
         
         moves.forEach(move => {
-            if (i + move.f >= 0 && i + move.f < row && j + move.s >= 0 && j + move.s < col && !visited[i + move.f][j + move.s]) {
-                queue.push({ i: i + move.f, j: j + move.s })
-                boxInQueue((i + move.f) * col + j + move.s)
+            const ni = i + move.i;
+            const nj = j + move.j
+            if (ni >= 0 && ni < row && nj >= 0 && nj < col && !visited[ni][nj]) {
+                queue.push({ i: ni, j: nj})
+                boxInQueue(ni * col + nj)
+                visited[ni][nj] = 1
+
             }
         })
 
         boxVisited(num)
         await sleep(time)
     }
-    boxReset(row * col)
+    boxReset()
 }
 

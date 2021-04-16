@@ -12,8 +12,6 @@ let col = 5
 function checkoverflow(box) {
     let width = box.offsetWidth
     let height = box.offsetHeight
-    console.log(height, screen.height * .80);
-    console.log(width, screen.width * .80);
 
     if (height > screen.height * 0.80) {
         box.style.overflowY = 'scroll'
@@ -25,9 +23,9 @@ function checkoverflow(box) {
     }
 }
 function generateGrid() {
-    document.querySelector('.box').style.gridTemplateColumns = `repeat(${col},1fr)`
     let counter = row * col;
     let box = document.querySelector('.box');
+    box.style.gridTemplateColumns = `repeat(${col},1fr)`
     box.innerHTML = ''
     for (let i = 0; i < counter; i++) {
         let div = document.createElement('div');
@@ -82,11 +80,8 @@ function boxVisited(num) {
     selectedBox.classList.remove('selected')
     selectedBox.classList.add('visited')
 }
-function boxReset(num) {
-    for (let i = 0; i < num; i++) {
-        let selectedBox = document.querySelector(`#box${i}`)
-        selectedBox.classList.remove('visited')
-    }
+function boxReset() {
+    generateGrid();
 }
 function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -94,34 +89,39 @@ function sleep(milliseconds) {
 
 async function startDFS(event) {
     const start = event.target.innerText
+    if (isNaN(start)) return
+
     const time = 500;
-    const moves = [{ f: 0, s: 1 }, { f: 0, s: -1 }, { f: 1, s: 0 }, { f: -1, s: 0 }]
+    const moves = [{ i: 0, j: 1 }, { i: 0, j: -1 }, { i: 1, j: 0 }, { i: -1, j: 0 }]
     let visited = emptyArray(row, col);
 
-    let selectedI = Math.floor(start / col);
-    let selectedJ = Math.floor(start % col);
-    visited[selectedI][selectedJ] = 1
+    let startI = Math.floor(start / col);
+    let startJ = Math.floor(start % col);
+    visited[startI][startJ] = 1
 
     let stack = [];
-    stack.push({ i: selectedI, j: selectedJ });
+    stack.push({ i: startI, j: startJ });
     while (stack.length > 0) {
         let { i, j } = stack.pop();
         let num = i * col + j;
+
 
         boxSelected(num)
         await sleep(time)
 
         moves.forEach(move => {
-            if (i + move.f >= 0 && i + move.f < row && j + move.s >= 0 && j + move.s < col && !visited[i + move.f][j + move.s]) {
-                stack.push({ i: i + move.f, j: j + move.s })
-                boxInStack((i + move.f) * col + j + move.s)
-                visited[i + move.f][j + move.s] = 1;
+            const ni = i + move.i;
+            const nj = j + move.j
+            if (ni >= 0 && ni < row && nj >= 0 && nj < col && !visited[ni][nj]) {
+                stack.push({ i: ni, j: nj })
+                boxInStack(ni * col + nj)
+                visited[ni][nj] = 1
             }
         })
 
         boxVisited(num)
         await sleep(time)
     }
-    boxReset(row * col)
+    boxReset()
 }
 
