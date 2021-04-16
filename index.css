@@ -1,51 +1,109 @@
 :root {
     --purple: #543864;
+    --purple-dark: #452a55;
     --orange: #ff6363;
+    --orange-light: #f8a488;
+    --orange-dark: rgb(224, 136, 107);
     --yellow: #ffbd69;
+    --green: #edffa9;
+    --pink: #eca3f5;
+    --bg: #f8f5f1;
 }
 main {
+    min-height: 80vh;
+}
+main section {
+    width: clamp(300px - 2rem, 80vw, 800px);
+    height: calc((clamp(300px - 2rem, 80vw, 800px) - 60px) / 3);
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     padding: 0;
-}
-#left,#right{
-    height: 100%;
-    filter: grayscale(100%);
-    transition: all 0.5s ease;
-}
-#left {
-    background-color: var(--orange);
-}
-#right {
-    background-color: var(--yellow);
-}
-#right:hover,
-#left:hover {
-    filter: grayscale(0);
-    border: 10px solid white;
+    gap: 30px;
 }
 
-#left a,
-#right a {
+.algo a {
     position: relative;
+    border-radius: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* display: block; */
+    width: 100%;
     height: 100%;
     font-size: 3rem;
     text-decoration: none;
     color: #fff;
     transition: all 0.3s linear;
-}
-#left a:after {
-    position: absolute;
-    content: "";
-    height: 2px;
-    width: 0;
-    left: 50%;
-    bottom: 0;
-    background-color: #fff;
-    border-radius: 4px;
+    overflow: hidden;
+    background-color: var(--orange-light);
 }
 
+.two a {
+    background-color: var(--purple);
+}
+.two a::after,
+.two a::before {
+    background-color: var(--purple-dark);
+}
+.one a::after,
+.one a::before,
+.three a::after,
+.three a::before {
+    background-color: var(--orange-dark);
+}
+.algo a:hover {
+    border: 10px solid white;
+    box-shadow: 0 10px 6px -5px hsl(0, 0%, 77%);
+}
+.one a::before {
+    content: "BFS";
+}
+.two a::before {
+    content: "A Star";
+}
+.three a::before {
+    content: "DFS";
+}
+.one a::after {
+    content: "Breadth First Search Traversal of graph";
+}
+.two a::after {
+    content: "A Star Path finding algorithm";
+}
+.three a::after {
+    content: "Depth First Search Traversal of graph";
+}
+.algo a::after,
+.algo a::before {
+    position: absolute;
+    text-align: center;
+    padding: 0.5rem;
+    width: calc(100% - 1rem);
+    left: 0;
+    font-size: 1rem;
+    transition: transform ease 0.3s;
+}
+.algo a::before {
+    height: 20%;
+    top: 0;
+    transform: translateY(-100%);
+}
+
+.algo a::after {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+    transform: translateY(100%);
+    top: 20%;
+}
+.algo a:hover::before,
+.algo a:hover::after {
+    transform: translateY(0);
+}
+@media only screen and (max-width: 650px) {
+    main section {
+        grid-template-columns: 1fr;
+        width: clamp(200px - 2rem, 50vw, 800px);
+        height: calc(clamp(200px - 2rem, 50vw, 800px) * 3);
+    }
+}
