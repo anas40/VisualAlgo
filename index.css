@@ -20,7 +20,15 @@ main section {
     padding: 0;
     gap: 30px;
 }
-
+header h2{
+    padding: 0 1rem;
+}
+footer a,footer p{
+    color: #fff;
+}
+footer a{
+    text-decoration: underline;
+}
 .algo a {
     position: relative;
     border-radius: 4px;
