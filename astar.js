@@ -9,6 +9,7 @@ let row = 12
 let col = 12
 let start = null
 let end = null
+const time = 100;
 // array containing postion of walls
 let walls = emptyArray(row, col)
 
@@ -119,23 +120,33 @@ function selectBoxes(event) {
         selectedBox.innerText = "W"
     }
 }
-function showSelectedPath(node) {
+async function showSelectedPath(node) {
     let stack = []
+    //putting path in stack array
     while (node !== null) {
         stack.push({ i: node.i, j: node.j });
         node = node.pre
     }
+    //for path from start to end
     stack.reverse();
-    generateGrid();
-    stack.forEach(child => {
+    //selecting all boxes
+    let boxes = document.querySelector('.box').children
+    //clearing the grid
+    for (let i = 0; i < boxes.length; i++) {
+        boxes[i].classList.remove('inQueue')
+        boxes[i].classList.remove('visited')
+    }
+    //displaying the selected path
+    for (const child of stack) {
         const num = child.i * col + child.j;
         let selectedBox = document.querySelector(`#box${num}`);
         selectedBox.classList.add('visited');
-    })
+        await sleep(time)
+    }
+
 }
 
 async function findPath() {
-    const time = 100;
     const moves = [{ i: 0, j: 1 }, { i: 0, j: -1 }, { i: 1, j: 0 }, { i: -1, j: 0 }]
     const visited = emptyArray(row, col);
 
