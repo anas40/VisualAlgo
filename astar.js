@@ -15,8 +15,6 @@ let walls = emptyArray(row, col)
 function checkoverflow(box) {
     let width = box.offsetWidth
     let height = box.offsetHeight
-    // console.log(height, screen.height * .80);
-    // console.log(width, screen.width * .80);
 
     if (height > screen.height * 0.80) {
         box.style.overflowY = 'scroll'
@@ -91,22 +89,17 @@ function boxReset() {
     end = null;
     walls = emptyArray(row, col);
 }
-function showSelectedPath() {
-    let boxes = document.querySelector('.box').children
-    for (let i = 0; i < boxes.length; i++) {
-        boxes[i].classList.remove('inQueue')
-    }
-}
+
 function sleep(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 function selectBoxes(event) {
     //if parent is clicked then do nothing
-    if(event.target.classList.contains('box')) return
+    if (event.target.classList.contains('box')) return
     const num = parseInt(event.target.innerText)
     //if box is already selected and contains string
     if (isNaN(num)) return
-    
+
     const selectedBox = document.querySelector(`#box${num}`)
 
     if (start === null) {
@@ -126,7 +119,20 @@ function selectBoxes(event) {
         selectedBox.innerText = "W"
     }
 }
-
+function showSelectedPath(node) {
+    let stack = []
+    while (node !== null) {
+        stack.push({ i: node.i, j: node.j });
+        node = node.pre
+    }
+    stack.reverse();
+    generateGrid();
+    stack.forEach(child => {
+        const num = child.i * col + child.j;
+        let selectedBox = document.querySelector(`#box${num}`);
+        selectedBox.classList.add('visited');
+    })
+}
 
 async function findPath() {
     const time = 100;
@@ -137,12 +143,14 @@ async function findPath() {
     visited[startI][startJ] = 1
 
     const pqueue = new PQ()
-    pqueue.push({ i: startI, j: startJ, priority: priority(startI, startJ) });
+    pqueue.push({ i: startI, j: startJ, priority: priority(startI, startJ), pre: null });
     while (pqueue.size > 0) {
-        const { i, j } = pqueue.pop();
+        const cur = pqueue.pop();
+        const { i, j } = cur
         const num = i * col + j;
         if (num === end) {
             boxVisited(end);
+            showSelectedPath(cur)
             break;
         };
         boxSelected(num)
@@ -152,7 +160,7 @@ async function findPath() {
             const ni = i + move.i;
             const nj = j + move.j
             if (ni >= 0 && ni < row && nj >= 0 && nj < col && !visited[ni][nj] && !walls[ni][nj]) {
-                pqueue.push({ i: ni, j: nj, priority: priority(ni, nj) })
+                pqueue.push({ i: ni, j: nj, priority: priority(ni, nj), pre: cur })
                 boxInQueue(ni * col + nj)
                 visited[ni][nj] = 1;
             }
@@ -161,9 +169,7 @@ async function findPath() {
         boxVisited(num)
         await sleep(time)
     }
-    showSelectedPath()
     await sleep(time * 50)
-
     boxReset()
 }
 
