@@ -176,7 +176,7 @@ class Board {
             if (ni < this.size && ni >= 0 && nj < this.size && nj >= 0) {
                 this.exchangeBlank(ni, nj);
                 let b = new Board(this.board);
-                this.exchangeBlank(ni-move[0], nj-move[1]);
+                this.exchangeBlank(ni - move[0], nj - move[1]);
                 n.push(b);
             }
         })
@@ -195,13 +195,17 @@ class Board {
     twin() {
         let fi = this.randomInt();
         let fj = this.randomInt();
-
-        let si = fi;
-        let sj = this.randomInt(2) >= 1 ? 1 : -1;
-        while (sj + fj < 0 || sj + fj > 2) {
-            sj = this.randomInt(2) >= 1 ? 1 : -1;
+        while (fi === this.blankI && fj === this.blankJ) {
+            fi = this.randomInt();
+            fj = this.randomInt();
         }
-        sj = sj + fj;
+        let si = this.randomInt();
+        let sj = this.randomInt();
+        while ((si === this.blankI && sj === this.blankJ) || (fi === si && fj === sj)) {
+            si = this.randomInt();
+            sj = this.randomInt();
+        }
+
         this.exchange(si, sj, fi, fj);
         let b = new Board(this.board);
         this.exchange(si, sj, fi, fj);
@@ -209,8 +213,6 @@ class Board {
     }
 
 }
-
-
 
 class Solver {
 
@@ -220,52 +222,44 @@ class Solver {
     // find a solution to the initial board (using the A* algorithm)
     constructor(initial) {
         this.Solution = null;
+        if (!this.isValid(initial.board)) return
         let pq = new PQ();
-        let tpq = new PQ();
-        let twin = initial.twin();
         pq.push(new Node(initial, null, 0));
-        tpq.push(new Node(twin, null, 0));
-        let count = 0;
-        while (pq.size > 0 && tpq.size > 0) {
-            if (count > 31) {
-                console.log("moveBreak")
+        while (pq.size > 0) {
+            let node = pq.pop();
+            if (node.moves > 50) {
+                console.log("huge");
                 break;
             }
-            let node = pq.pop();
-            let tnode = tpq.pop();
             if (node.board.isGoal() == true) {
                 this.Solution = node;
                 let copy = node;
                 while (copy != null) {
-                    this.stk.push(copy.board);
+                    this.stk.push(copy.board.board);
                     copy = copy.previos;
                 }
                 break;
             }
-            if (tnode.board.isGoal() == true) {
-                break;
-            }
-
             node.board.neighbors().forEach(n => {
                 if (node.previos != null && node.previos.board.equals(n.board) == false) {
-                    let no = new Node(n, node, node.moves + 1);
-                    pq.push(no);
+                    pq.push(new Node(n, node, node.moves + 1));
                 } else if (node.previos == null) {
-                    let no = new Node(n, node, node.moves + 1);
-                    pq.push(no);
+                    pq.push(new Node(n, node, node.moves + 1));
                 }
             })
-            tnode.board.neighbors().forEach(n => {
-                if (tnode.previos != null && tnode.previos.board.equals(n.board) == false) {
-                    let no = new Node(n, tnode, tnode.moves + 1);
-                    tpq.push(no);
-                } else if (tnode.previos == null) {
-                    let no = new Node(n, tnode, tnode.moves + 1);
-                    tpq.push(no);
-                }
-            })
-            count++;
         }
+    }
+    isValid(board) {
+        let flat = JSON.parse(JSON.stringify(board)).flat()
+        let inversion = 0;
+        for (let i = 0; i < flat.length; i++) {
+            for (let j = i + 1; j < flat.length; j++) {
+                if (flat[i] === 0 || flat[j] === 0) continue;
+                if (flat[j] < flat[i]) inversion++
+            }
+        }
+        if (inversion % 2 === 0) return true;
+        return false;
     }
 
     // is the initial board solvable? (see below)
@@ -286,17 +280,111 @@ class Solver {
         return ans.reverse()
     }
 }
-let tiles = [[1, 2, 3], [4, 6, 5], [0, 7, 8]]
 
-let b = new Board(tiles);
-let s = new Solver(b);
-if (s.isSolvable()) {
-    console.log("Solvable")
-    s.solution().forEach(board => {
-        console.log(board.toString())
-    })
-} else {
-    console.log("Not Solvable")
+let row = 3
+let col = 3
+let images = [
+    { id: 1, image: "./doge/1.png" },
+    { id: 2, image: "./doge/2.png" },
+    { id: 3, image: "./doge/3.png" },
+    { id: 4, image: "./doge/4.png" },
+    { id: 5, image: "./doge/5.png" },
+    { id: 6, image: "./doge/6.png" },
+    { id: 7, image: "./doge/7.png" },
+    { id: 8, image: "./doge/8.png" },
+    { id: 0, image: "" }]
+
+let tiles = [[], [], []]
+
+
+window.addEventListener('load', () => {
+    document.querySelector('#shuffle').addEventListener('click', generateGrid)
+    document.querySelector('#start').addEventListener('click', solve);
+    generateGrid()
+});
+async function solve() {
+    console.log(tiles);
+    let board = new Board(tiles);
+    let solver = new Solver(board);
+    if (solver.isSolvable()) {
+        let solution = solver.solution()
+        for (const board of solution) {
+            let box = document.querySelector('.box');
+            box.innerHTML = ''
+
+            for (let i = 0; i < 9; i++) {
+                let div = document.createElement('div');
+                let id = board[Math.floor(i / col)][i % col];
+                div.id = `box${id}`;
+                if (id === 0) {
+                    div.innerHTML = ''
+                }
+                else {
+                    div.innerHTML = `<img src="./doge/${id}.png" />`;
+                }
+                div.className = 'childBox';
+                box.appendChild(div);
+            }
+            await sleep(500);
+        }
+        document.querySelector('#box0').innerHTML = '<img src="./doge/9.png" />'
+
+    }
+}
+function sleep(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+function isValid() {
+    let flat = JSON.parse(JSON.stringify(tiles)).flat()
+    let inversion = 0;
+    for (let i = 0; i < flat.length; i++) {
+        for (let j = i + 1; j < flat.length; j++) {
+            if (flat[i] === 0 || flat[j] === 0) continue;
+            if (flat[j] < flat[i]) inversion++
+        }
+    }
+    if (inversion % 2 === 0) return true;
+    return false;
+}
+function getTiles(imagePos) {
+
+    for (let i = 0; i < imagePos.length; i++){
+        let id = imagePos[i].id;        
+        tiles[Math.floor(i / col)][i % col] = id;
+    }
+}
+function generateGrid() {
+    document.querySelector('.box').style.gridTemplateColumns = `repeat(${col},1fr)`
+    console.log("Generated");
+    let counter = row * col;
+    shuffle(images);
+    getTiles(images);
+    
+    while (!isValid()) {
+        console.log("Turn");
+        shuffle(images);
+        getTiles(images);
+    }
+    let box = document.querySelector('.box');
+    box.innerHTML = ''
+
+    for (let i = 0; i < counter; i++) {
+        let div = document.createElement('div');
+        let id = images[i].id;
+        div.id = `box${id}`;
+        div.innerHTML = `<img src="${images[i].image}" />`;
+        div.className = 'childBox';
+        box.appendChild(div);
+    }
+}
+function shuffle(arr, n = 9) {
+    for (let i = n - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1))
+        let temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
 }
 
 
