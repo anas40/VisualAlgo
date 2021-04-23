@@ -9,9 +9,3 @@
 
 - 🔭 View this project here [Visual Graph](https://anas40.github.io/visualgraph/)
 
-- 👨‍💻 All of my projects are available at [https://github.com/anas40](https://github.com/anas40)
-
-- 📫 How to reach me **anasbeg50@gmail.com**
-
-- 📄 Know about my experiences [https://docdro.id/oCdhM6J](https://docdro.id/oCdhM6J)
-
