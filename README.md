@@ -1,5 +1,3 @@
-<h1 align="center">Hi 👋, I'm Anas</h1>
-<h3 align="center">A passionate web developer from India</h3>
 <h2>About</h2>
 <p>This project helps in visualization of 3 graph algorithms. Two of which are graph traversal- BFS and DFS and other one is path finding algorithm - A star.</p>
 <p>The grid can be assumed as a node having edges to top, left, bottom and right node.</p>
